@@ -12,9 +12,12 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [filteredName, setFilteredName] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+  const [filteredByName, setFilteredByName] = useState([]);
+  const [filterStatus, setFilterStatus] = useState(false);
 
   const nameAlreadyAdded = persons.some((person) => person.name === newName);
+  const personsToShow = filterStatus ? filteredByName : persons;
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -29,27 +32,28 @@ const App = () => {
 
     setNewName("");
     setNewNumber("");
-    setFilteredName("");
+    setFilterStatus(false);
+    setFilterValue("");
   };
   const handleNameChange = (event) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     setNewName(event.target.value);
   };
   const handleNumberChange = (event) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     setNewNumber(event.target.value);
   };
   const handleFilterChange = (event) => {
-    event.preventDefault();
-    setFilteredName(event.target.value);
+    setFilterValue(event.target.value);
     const regexp = new RegExp(event.target.value, "i");
-    setPersons(persons.filter((person) => regexp.test(person.name)))
+    setFilteredByName(persons.filter((person) => regexp.test(person.name)));
+    event.target.value === "" ? setFilterStatus(false) : setFilterStatus(true);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter value={filteredName} onChange={handleFilterChange} />
+      <Filter value={filterValue} onChange={handleFilterChange} />
       <h2>Add a new</h2>
       <PersonForm
         onSubmit={addPerson}
@@ -59,7 +63,7 @@ const App = () => {
         numberOnChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={personsToShow} />
     </div>
   );
 };
